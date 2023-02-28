@@ -26,9 +26,14 @@ namespace HOK.RoomElevation
         private ElevationCreatorSettings toolSettings = null;
         private XYZ pickPoint = null;
 
-        public ElevationCreatorSettings ToolSettings { get { return toolSettings; } set { toolSettings = value; } }
-        public RoomElevationProperties RoomProperties { get { return roomProperties; } set { roomProperties = value; } }
-        public XYZ PickPoint { get { return pickPoint; } set { pickPoint = value; } }
+        public ElevationCreatorSettings ToolSettings
+        { get { return toolSettings; } set { toolSettings = value; } }
+
+        public RoomElevationProperties RoomProperties
+        { get { return roomProperties; } set { roomProperties = value; } }
+
+        public XYZ PickPoint
+        { get { return pickPoint; } set { pickPoint = value; } }
 
         public ElevationCreator(UIApplication uiapp, RoomElevationProperties rep, Wall wall, ElevationCreatorSettings settings, Dictionary<int, LinkedInstanceProperties> linkedInstances)
         {
@@ -42,7 +47,6 @@ namespace HOK.RoomElevation
             linkedDocuments = linkedInstances;
             m_viewPlan = toolSettings.ActiveViewPlan;
             m_viewFamilyTypeId = new ElementId(toolSettings.ViewFamilyId);
-            
         }
 
         public ElevationCreator(UIApplication uiapp, RoomElevationProperties rep, ElevationCreatorSettings settings, Dictionary<int, LinkedInstanceProperties> linkedInstances)
@@ -56,7 +60,6 @@ namespace HOK.RoomElevation
             linkedDocuments = linkedInstances;
             m_viewPlan = toolSettings.ActiveViewPlan;
             m_viewFamilyTypeId = new ElementId(toolSettings.ViewFamilyId);
-
         }
 
         public bool CheckExisting()
@@ -101,7 +104,6 @@ namespace HOK.RoomElevation
             return result;
         }
 
-
         public bool CreateElevationByList()
         {
             bool result = false;
@@ -109,7 +111,6 @@ namespace HOK.RoomElevation
             {
                 ElevationMarker marker = null;
                 XYZ markerLocation = null;
-                
 
                 ApplyTemplateSettings();
 
@@ -179,9 +180,9 @@ namespace HOK.RoomElevation
                                     viewElevation.ViewTemplateId = new ElementId(toolSettings.ViewTemplateId);
                                 }
 
-                                Parameter param = viewElevation.LookupParameter("Title on Sheet");
+                                Parameter param = viewElevation.LookupParameter("NS-所属空间");
 
-                                if (null != param)
+                                if (null != param && !param.IsReadOnly)
                                 {
                                     param.Set(m_room.Name);
                                 }
@@ -193,18 +194,18 @@ namespace HOK.RoomElevation
                                 }
                             }
 
-                            if (elevationViews.Count > 0  && !roomProperties.ElevationViews.ContainsKey(marker.Id.IntegerValue))
+                            if (elevationViews.Count > 0 && !roomProperties.ElevationViews.ContainsKey(marker.Id.IntegerValue))
                             {
                                 roomProperties.KeyMarkId = marker.Id.IntegerValue;
                                 roomProperties.ElevationViews.Add(marker.Id.IntegerValue, elevationViews);
                             }
-                            
+
                             trans.Commit();
                         }
                         catch (Exception ex)
                         {
                             trans.RollBack();
-                            LogMessageBuilder.AddLogMessage(roomProperties.RoomNumber + " - " +roomProperties.RoomName + " : failed to create elevation views.");
+                            LogMessageBuilder.AddLogMessage(roomProperties.RoomNumber + " - " + roomProperties.RoomName + " : failed to create elevation views.");
                             LogMessageBuilder.AddLogMessage(ex.Message);
                             //MessageBox.Show("Failed to create elevation views.\n" + ex.Message, "Elevation Creator: Create Elevation Views", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
@@ -259,7 +260,7 @@ namespace HOK.RoomElevation
                                 markerLocation = lip.TransformValue.OfPoint(markerLocation);
                             }
                         }
-                        
+
                         marker = ElevationMarker.CreateElevationMarker(m_doc, m_viewFamilyTypeId, markerLocation, toolSettings.CustomScale);
                         trans.Commit();
 
@@ -304,10 +305,10 @@ namespace HOK.RoomElevation
                                             firstView = false;
                                             trans.Commit();
                                         }
-                                        catch(Exception ex)
+                                        catch (Exception ex)
                                         {
                                             trans.RollBack();
-                                            MessageBox.Show("Failed to rotate the elevation marker.\n"+ex.Message , "Elevation Creator : RotateMarker", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                            MessageBox.Show("Failed to rotate the elevation marker.\n" + ex.Message, "Elevation Creator : RotateMarker", MessageBoxButton.OK, MessageBoxImage.Warning);
                                         }
                                     }
 
@@ -320,7 +321,7 @@ namespace HOK.RoomElevation
                                 }
                             }
 
-                            if (elevationViews.Count>0 && !roomProperties.ElevationViews.ContainsKey(marker.Id.IntegerValue))
+                            if (elevationViews.Count > 0 && !roomProperties.ElevationViews.ContainsKey(marker.Id.IntegerValue))
                             {
                                 roomProperties.ElevationViews.Add(marker.Id.IntegerValue, elevationViews);
                             }
@@ -336,7 +337,7 @@ namespace HOK.RoomElevation
 
                 if (null != marker && null != markerLocation)
                 {
-                    if (ModifyCropBox(roomProperties , marker.Id.IntegerValue))
+                    if (ModifyCropBox(roomProperties, marker.Id.IntegerValue))
                     {
                         if (ElevationCreatorDataStorageUtil.StoreRoomElevationProperties(m_doc, roomProperties))
                         {
@@ -345,11 +346,10 @@ namespace HOK.RoomElevation
                         }
                     }
                 }
-                
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to create an elevation view.\nRoom Name: "+m_room.Name+"\nWall Name: "+m_wall.Name+"\n"+ex.Message, "", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to create an elevation view.\nRoom Name: " + m_room.Name + "\nWall Name: " + m_wall.Name + "\n" + ex.Message, "", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return result;
         }
@@ -368,7 +368,11 @@ namespace HOK.RoomElevation
                         int viewScaleMetric = (int)BuiltInParameter.VIEW_SCALE_PULLDOWN_METRIC;
                         int viewScale = (int)BuiltInParameter.VIEW_SCALE;
 
-                        var selectedIds = from paramId in parameterIds where paramId.IntegerValue == viewScaleImperial || paramId.IntegerValue == viewScaleMetric || paramId.IntegerValue == viewScale select paramId;
+                        var selectedIds = from paramId in parameterIds
+                                          where paramId.IntegerValue == viewScaleImperial
+                                          || paramId.IntegerValue == viewScaleMetric
+                                          || paramId.IntegerValue == viewScale
+                                          select paramId;
                         if (selectedIds.Count() > 0)
                         {
                             using (Transaction trans = new Transaction(m_doc, "SetViewTemplate"))
@@ -384,13 +388,13 @@ namespace HOK.RoomElevation
                                     {
                                         viewSection.SetNonControlledTemplateParameterIds(selectedIds.ToList());
                                     }
-                                   
+
                                     trans.Commit();
                                 }
                                 catch (Exception ex)
                                 {
                                     trans.RollBack();
-                                    MessageBox.Show("Failed to include or exclude View Scale parameter from the view template.\n"+ex.Message, "View Template", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    MessageBox.Show("Failed to include or exclude View Scale parameter from the view template.\n" + ex.Message, "View Template", MessageBoxButton.OK, MessageBoxImage.Warning);
                                 }
                             }
                         }
@@ -399,7 +403,7 @@ namespace HOK.RoomElevation
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to apply template settings.\n"+ex.Message, "Elevation Creator : ApplyTemplateSettings", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to apply template settings.\n" + ex.Message, "Elevation Creator : ApplyTemplateSettings", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -449,7 +453,7 @@ namespace HOK.RoomElevation
                                 {
                                     string indexStr = name.Replace("Elevation", "");
                                     int index = 1;
-                                    if(int.TryParse(indexStr, out index))
+                                    if (int.TryParse(indexStr, out index))
                                     {
                                         if (elevationIndex == index)
                                         {
@@ -489,11 +493,11 @@ namespace HOK.RoomElevation
                 {
                     if (!string.IsNullOrEmpty(viewName))
                     {
-                        viewName += "-Elevation"+elevationIndex;
+                        viewName += "-Elevation" + elevationIndex;
                     }
                     else
                     {
-                        viewName += "Elevation"+elevationIndex;
+                        viewName += "Elevation" + elevationIndex;
                     }
                 }
 
@@ -513,14 +517,13 @@ namespace HOK.RoomElevation
                 {
                     if (!string.IsNullOrEmpty(viewName))
                     {
-                        viewName += " (" + suffix+")";
+                        viewName += " (" + suffix + ")";
                     }
                     else
                     {
                         viewName += "(" + suffix + ")";
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -555,7 +558,7 @@ namespace HOK.RoomElevation
                 {
                     XYZ directionV = intersectionPoint - markerPoint;
                     double angle = XYZ.BasisY.AngleTo(directionV);
-                    rotationalAngle = angle % (0.5*Math.PI);
+                    rotationalAngle = angle % (0.5 * Math.PI);
 
                     bool counterClockwise = true;
                     if (XYZ.BasisY.CrossProduct(directionV).Z < 0)
@@ -566,16 +569,15 @@ namespace HOK.RoomElevation
 
                     if (counterClockwise)
                     {
-                        if (angle <(0.5*Math.PI))
+                        if (angle < (0.5 * Math.PI))
                         {
                             indexDictionary = new Dictionary<int, string>();
                             if (toolSettings.AIsSelected) { indexDictionary.Add(1, "A"); }
                             if (toolSettings.BIsSelected) { indexDictionary.Add(2, "B"); }
                             if (toolSettings.CIsSelected) { indexDictionary.Add(3, "C"); }
                             if (toolSettings.DIsSelected) { indexDictionary.Add(0, "D"); }
-
                         }
-                        else if (angle >= (0.5*Math.PI) || angle < Math.PI)
+                        else if (angle >= (0.5 * Math.PI) || angle < Math.PI)
                         {
                             indexDictionary = new Dictionary<int, string>();
                             if (toolSettings.AIsSelected) { indexDictionary.Add(0, "A"); }
@@ -586,7 +588,7 @@ namespace HOK.RoomElevation
                     }
                     else
                     {
-                        if (angle < (0.5*Math.PI))
+                        if (angle < (0.5 * Math.PI))
                         {
                             indexDictionary = new Dictionary<int, string>();
                             if (toolSettings.AIsSelected) { indexDictionary.Add(1, "A"); }
@@ -594,7 +596,7 @@ namespace HOK.RoomElevation
                             if (toolSettings.CIsSelected) { indexDictionary.Add(3, "C"); }
                             if (toolSettings.DIsSelected) { indexDictionary.Add(0, "D"); }
                         }
-                        else if (angle >= (0.5*Math.PI) || angle < Math.PI)
+                        else if (angle >= (0.5 * Math.PI) || angle < Math.PI)
                         {
                             indexDictionary = new Dictionary<int, string>();
                             if (toolSettings.AIsSelected) { indexDictionary.Add(2, "A"); }
@@ -605,9 +607,9 @@ namespace HOK.RoomElevation
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("Failed to get the index for marker labels.\n"+ex.Message, "Elevation Creator: Get Marker Label", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to get the index for marker labels.\n" + ex.Message, "Elevation Creator: Get Marker Label", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return indexDictionary;
         }
@@ -627,9 +629,9 @@ namespace HOK.RoomElevation
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to rotate the elevation marker.\n"+ex.Message, "Elevation Creator: RotateMarker", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to rotate the elevation marker.\n" + ex.Message, "Elevation Creator: RotateMarker", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            
+
             return rotated;
         }
 
@@ -705,7 +707,7 @@ namespace HOK.RoomElevation
                                         if (zMax < p.Z) { zMax = p.Z; }
                                     }
                                 }
-
+                                //设置裁剪框
                                 using (Transaction trans = new Transaction(m_doc, "Set Crop Box"))
                                 {
                                     trans.Start();
@@ -732,7 +734,6 @@ namespace HOK.RoomElevation
                             }
                         }
                     }
-                    
                 }
             }
             catch (Exception ex)
