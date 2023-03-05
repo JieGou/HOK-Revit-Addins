@@ -22,18 +22,23 @@ namespace HOK.SheetManager.AddIn.Updaters
         private SheetManagerConfiguration configuration = null;
         private UpdaterDataManager dataManager = null;
 
-        private BuiltInParameter[] bltParameters = 
-        { 
+        private BuiltInParameter[] bltParameters =
+        {
             BuiltInParameter.SHEET_NUMBER,
             BuiltInParameter.SHEET_NAME
         };
+
         private Dictionary<ElementId/*paramId*/, string/*paramName*/> sheetParameters = new Dictionary<ElementId, string>();
         private Dictionary<ElementId/*elementId*/, string/*uniqueId*/> idMaps = new Dictionary<ElementId, string>();
         private List<SheetParameter> rvtSheetParameters = new List<SheetParameter>(); //sheet parameters in database
 
         public static bool IsSheetManagerOn = false;
-        public Dictionary<ElementId, string> SheetParameters { get { return sheetParameters; } set { sheetParameters = value; } }
-        public Dictionary<ElementId, string> IdMaps { get { return idMaps; } set { idMaps = value; } }
+
+        public Dictionary<ElementId, string> SheetParameters
+        { get { return sheetParameters; } set { sheetParameters = value; } }
+
+        public Dictionary<ElementId, string> IdMaps
+        { get { return idMaps; } set { idMaps = value; } }
 
         public SheetUpdater(AddInId addInId, Guid updaterGuid, SheetManagerConfiguration config)
         {
@@ -44,11 +49,10 @@ namespace HOK.SheetManager.AddIn.Updaters
 
             dataManager = new UpdaterDataManager(configuration.DatabaseFile);
             rvtSheetParameters = dataManager.GetSheetParameters();
-            
+
             //update project id
             CollectSheetParamIds();
         }
-
 
         private void CollectSheetParamIds()
         {
@@ -142,7 +146,7 @@ namespace HOK.SheetManager.AddIn.Updaters
                         List<ElementId> parameterChanged = new List<ElementId>();
                         foreach (ElementId paramId in sheetParameters.Keys)
                         {
-                            if(data.IsChangeTriggered(sheetId, Element.GetChangeTypeParameter(paramId)))
+                            if (data.IsChangeTriggered(sheetId, Element.GetChangeTypeParameter(paramId)))
                             {
                                 parameterChanged.Add(paramId);
                             }
@@ -156,7 +160,6 @@ namespace HOK.SheetManager.AddIn.Updaters
                 {
                     //bool deleted = DeleteSheet(sheetId);
                 }
-                
             }
             catch (Exception ex)
             {
@@ -170,7 +173,12 @@ namespace HOK.SheetManager.AddIn.Updaters
             try
             {
                 // insert into the database connected
+#if DEBUG2018 || RELEASE2018
                 RevitSheet rvtSheet = new RevitSheet(Guid.NewGuid(), sheet.SheetNumber, sheet.ViewName);
+#else
+                RevitSheet rvtSheet = new RevitSheet(Guid.NewGuid(), sheet.SheetNumber, sheet.Name);
+
+#endif
                 LinkedSheet linkedSheet = new LinkedSheet(Guid.NewGuid(), rvtSheet.Id, new LinkedProject(linkedProjectId), sheet.UniqueId, true);
                 rvtSheet.LinkedSheets.Add(linkedSheet);
                 bool sheetDBUpdated = SheetDataWriter.ChangeSheetItem(rvtSheet, CommandType.INSERT);
@@ -192,12 +200,15 @@ namespace HOK.SheetManager.AddIn.Updaters
                             case StorageType.Double:
                                 paramValue.ParameterValue = param.AsDouble().ToString();
                                 break;
+
                             case StorageType.ElementId:
                                 paramValue.ParameterValue = param.AsElementId().IntegerValue.ToString();
                                 break;
+
                             case StorageType.Integer:
                                 paramValue.ParameterValue = param.AsInteger().ToString();
                                 break;
+
                             case StorageType.String:
                                 paramValue.ParameterValue = param.AsString();
                                 break;
@@ -226,7 +237,6 @@ namespace HOK.SheetManager.AddIn.Updaters
                 {
                     idMaps.Add(sheet.Id, sheet.UniqueId);
                 }
-
             }
             catch (Exception ex)
             {
@@ -255,12 +265,15 @@ namespace HOK.SheetManager.AddIn.Updaters
                                 case StorageType.Double:
                                     paramValue = param.AsDouble().ToString();
                                     break;
+
                                 case StorageType.ElementId:
                                     paramValue = param.AsElementId().IntegerValue.ToString();
                                     break;
+
                                 case StorageType.Integer:
                                     paramValue = param.AsInteger().ToString();
                                     break;
+
                                 case StorageType.String:
                                     paramValue = param.AsString();
                                     break;
@@ -277,7 +290,6 @@ namespace HOK.SheetManager.AddIn.Updaters
                             else if (paramId.IntegerValue == (int)BuiltInParameter.SHEET_NAME)
                             {
                                 updated = SheetDataWriter.ChangeSheetItem(lsheet.SheetId.ToString(), "Sheet_Name", paramValue);
-
                             }
                             else if (paramId.IntegerValue == (int)BuiltInParameter.SHEET_NUMBER)
                             {
@@ -286,7 +298,6 @@ namespace HOK.SheetManager.AddIn.Updaters
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {

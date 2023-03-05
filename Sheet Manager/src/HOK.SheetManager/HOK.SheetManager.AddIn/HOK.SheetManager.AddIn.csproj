@@ -266,7 +266,7 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
+<!-- <PropertyGroup>
     <PostBuildEvent>echo Signing...
 "$(SolutionDir)..\..\..\_postBuild\codeSigning.ps1" "$(TargetPath)"
 
@@ -346,7 +346,7 @@ xcopy /Q/Y "$(TargetDir)EntityFramework.SqlServer.dll" "%25ALLUSERSPROFILE%25\Au
 goto exit
 
 :exit</PostBuildEvent>
-  </PropertyGroup>
+</PropertyGroup> -->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

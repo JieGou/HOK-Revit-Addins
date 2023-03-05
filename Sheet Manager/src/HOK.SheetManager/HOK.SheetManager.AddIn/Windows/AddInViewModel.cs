@@ -27,7 +27,7 @@ namespace HOK.SheetManager.AddIn.Windows
         private Document currentDoc = null;
 
         private SheetManagerConfiguration config = new SheetManagerConfiguration();
-        private Guid linkedProjectId = Guid.Empty; 
+        private Guid linkedProjectId = Guid.Empty;
         private string dbFile = "";
         private LinkedProject currentProject = new LinkedProject();
         private RevitSheetData rvtSheetData = new RevitSheetData();
@@ -51,31 +51,74 @@ namespace HOK.SheetManager.AddIn.Windows
         private RelayCommand checkAllCommand;
         private RelayCommand uncheckAllCommand;
 
-        public ExternalEvent ExtEvent { get { return m_event; } set { m_event = value; NotifyPropertyChanged("ExtEvent"); } }
-        public SheetManagerHandler Handler { get { return m_handler; } set { m_handler = value; NotifyPropertyChanged("Handler"); } }
+        public ExternalEvent ExtEvent
+        { get { return m_event; } set { m_event = value; NotifyPropertyChanged("ExtEvent"); } }
 
-        public SheetManagerConfiguration Configuration { get { return config; } set { config = value; NotifyPropertyChanged("Configuration"); } }
-        public Guid LinkedProjectId { get { return linkedProjectId; } set { linkedProjectId = value; NotifyPropertyChanged("LinkedProjectId"); } }
-        public string DBFile { get { return dbFile; } set { dbFile = value; NotifyPropertyChanged("DatabaseOpened"); } }
-        public LinkedProject CurrentProject { get { return currentProject; } set { currentProject = value; NotifyPropertyChanged("CurrentProject"); } }
-        public RevitSheetData RvtSheetData { get { return rvtSheetData; } set { rvtSheetData = value; NotifyPropertyChanged("RvtSheetData"); } }
-        public RevitSheet SelectedSheet { get { return selectedSheet; } set { selectedSheet = value; NotifyPropertyChanged("SelectedSheet"); } }
-        public bool DatabaseOpened { get { return databaseOpened; } set { databaseOpened = value; NotifyPropertyChanged("DatabaseOpened"); } }
-        public bool AutoUpdate { get { return autoUpdate; } set { autoUpdate = value; NotifyPropertyChanged("AutoUpdate"); } }
-        public string StatusText { get { return statusText; } set { statusText = value; NotifyPropertyChanged("StatusText"); } }
+        public SheetManagerHandler Handler
+        { get { return m_handler; } set { m_handler = value; NotifyPropertyChanged("Handler"); } }
 
-        public ICommand ConnectDBCommand { get { return connectDBCommand; } }
-        public ICommand UpdateSheetCommand { get { return updateSheetCommand; } }
-        public ICommand UpdateRevisionCommand { get { return updateRevisionCommand; } }
-        public ICommand UpdateRevisionOnSheetCommand { get { return updateRevisionOnSheetCommand; } }
-        public ICommand PlaceViewCommand { get { return placeViewCommand; } }
-        public ICommand ImportViewCommand { get { return importViewCommand; } }
-        public ICommand RenumberSheetCommand { get { return renumberSheetCommand; } }
-        public ICommand RenameViewCommand { get { return renameViewCommand; } }
-        public ICommand SettingCommand { get { return settingCommand; } }
-        public ICommand HelpCommand { get { return helpCommand; } }
-        public ICommand CheckAllCommand { get { return checkAllCommand; } }
-        public ICommand UncheckAllCommand { get { return uncheckAllCommand; } }
+        public SheetManagerConfiguration Configuration
+        { get { return config; } set { config = value; NotifyPropertyChanged("Configuration"); } }
+
+        public Guid LinkedProjectId
+        { get { return linkedProjectId; } set { linkedProjectId = value; NotifyPropertyChanged("LinkedProjectId"); } }
+
+        public string DBFile
+        { get { return dbFile; } set { dbFile = value; NotifyPropertyChanged("DatabaseOpened"); } }
+
+        public LinkedProject CurrentProject
+        { get { return currentProject; } set { currentProject = value; NotifyPropertyChanged("CurrentProject"); } }
+
+        public RevitSheetData RvtSheetData
+        { get { return rvtSheetData; } set { rvtSheetData = value; NotifyPropertyChanged("RvtSheetData"); } }
+
+        public RevitSheet SelectedSheet
+        { get { return selectedSheet; } set { selectedSheet = value; NotifyPropertyChanged("SelectedSheet"); } }
+
+        public bool DatabaseOpened
+        { get { return databaseOpened; } set { databaseOpened = value; NotifyPropertyChanged("DatabaseOpened"); } }
+
+        public bool AutoUpdate
+        { get { return autoUpdate; } set { autoUpdate = value; NotifyPropertyChanged("AutoUpdate"); } }
+
+        public string StatusText
+        { get { return statusText; } set { statusText = value; NotifyPropertyChanged("StatusText"); } }
+
+        public ICommand ConnectDBCommand
+        { get { return connectDBCommand; } }
+
+        public ICommand UpdateSheetCommand
+        { get { return updateSheetCommand; } }
+
+        public ICommand UpdateRevisionCommand
+        { get { return updateRevisionCommand; } }
+
+        public ICommand UpdateRevisionOnSheetCommand
+        { get { return updateRevisionOnSheetCommand; } }
+
+        public ICommand PlaceViewCommand
+        { get { return placeViewCommand; } }
+
+        public ICommand ImportViewCommand
+        { get { return importViewCommand; } }
+
+        public ICommand RenumberSheetCommand
+        { get { return renumberSheetCommand; } }
+
+        public ICommand RenameViewCommand
+        { get { return renameViewCommand; } }
+
+        public ICommand SettingCommand
+        { get { return settingCommand; } }
+
+        public ICommand HelpCommand
+        { get { return helpCommand; } }
+
+        public ICommand CheckAllCommand
+        { get { return checkAllCommand; } }
+
+        public ICommand UncheckAllCommand
+        { get { return uncheckAllCommand; } }
 
         public AddInViewModel(SheetManagerConfiguration configuration)
         {
@@ -280,7 +323,7 @@ namespace HOK.SheetManager.AddIn.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to update sheets.\n"+ex.Message, "Update Sheets", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to update sheets.\n" + ex.Message, "Update Sheets", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return updated;
         }
@@ -353,7 +396,12 @@ namespace HOK.SheetManager.AddIn.Windows
             try
             {
                 viewSheet.SheetNumber = rvtSheet.Number;
+#if DEBUG2018 || RELEASE2018
                 viewSheet.ViewName = rvtSheet.Name;
+#else
+                viewSheet.Name = rvtSheet.Name;
+
+#endif
 
                 foreach (SheetParameterValue paramValue in rvtSheet.SheetParameters.Values)
                 {
@@ -370,6 +418,7 @@ namespace HOK.SheetManager.AddIn.Windows
                                     param.Set(paramValueDbl);
                                 }
                                 break;
+
                             case StorageType.ElementId:
                                 int paramValueElementId;
                                 if (int.TryParse(paramValue.ParameterValue, out paramValueElementId))
@@ -377,6 +426,7 @@ namespace HOK.SheetManager.AddIn.Windows
                                     param.Set(new ElementId(paramValueElementId));
                                 }
                                 break;
+
                             case StorageType.Integer:
                                 int paramvalueInt;
                                 if (int.TryParse(paramValue.ParameterValue, out paramvalueInt))
@@ -385,6 +435,7 @@ namespace HOK.SheetManager.AddIn.Windows
                                 }
 
                                 break;
+
                             case StorageType.String:
                                 param.Set(paramValue.ParameterValue);
                                 break;
@@ -632,7 +683,7 @@ namespace HOK.SheetManager.AddIn.Windows
                 MessageInfo mInfo = new MessageInfo(rvtSheet, ex.Message);
                 messages.Add(mInfo);
             }
-            
+
             return rosUpdated;
         }
 
@@ -705,7 +756,7 @@ namespace HOK.SheetManager.AddIn.Windows
                             MessageBox.Show("Failed to place views.\n" + ex.Message, "Place Views", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
                     }
-                    
+
                     ProgressManager.FinalizeProgress();
                 }
             }
@@ -726,8 +777,8 @@ namespace HOK.SheetManager.AddIn.Windows
                 ViewSheet viewSheet = doc.GetElement(rvtSheet.LinkStatus.CurrentLinkedId) as ViewSheet;
                 if (null != viewSheet)
                 {
-                    var viewFound = from view in rvtSheetData.Views 
-                                    where view.Sheet.Id == rvtSheet.Id && view.LinkStatus.LinkedElementId != -1 
+                    var viewFound = from view in rvtSheetData.Views
+                                    where view.Sheet.Id == rvtSheet.Id && view.LinkStatus.LinkedElementId != -1
                                     select view;
                     if (viewFound.Count() > 0)
                     {
@@ -776,7 +827,6 @@ namespace HOK.SheetManager.AddIn.Windows
                                     }
                                     else if (view.ViewType == ViewType.Schedule)
                                     {
-
                                         ScheduleSheetInstance createdInstance = ScheduleSheetInstance.Create(doc, viewSheet.Id, view.Id, XYZ.Zero);
                                         if (null != createdInstance)
                                         {
@@ -855,7 +905,14 @@ namespace HOK.SheetManager.AddIn.Windows
                         XYZ centerPoint = vp.GetBoxCenter();
                         Outline outline = vp.GetBoxOutline();
                         XYZ minPoint = outline.MinimumPoint;
-                        var viewFound = from rv in rvtSheetData.Views where rv.Name == view.ViewName select rv;
+                        var viewFound =
+                            from rv in rvtSheetData.Views
+#if DEBUG2018 || RELEASE2018
+                            where rv.Name == view.ViewName
+#else
+                            where rv.Name == view.Name
+#endif
+                            select rv;
                         if (viewFound.Count() > 0)
                         {
                             rvtView = viewFound.First();
@@ -877,7 +934,17 @@ namespace HOK.SheetManager.AddIn.Windows
                             {
                                 viewType = viewTypeFound.First();
                             }
-                            rvtView = new RevitView(Guid.NewGuid(), view.ViewName, rvtSheet, viewType, Math.Round(minPoint.X, 2), Math.Round(minPoint.Y, 2));
+                            rvtView = new RevitView(Guid.NewGuid(),
+#if DEBUG2018 || RELEASE2018
+                            view.ViewName,
+#else
+                 view.Name,
+
+#endif
+                                                    rvtSheet,
+                                                    viewType,
+                                                    Math.Round(minPoint.X, 2),
+                                                    Math.Round(minPoint.Y, 2));
                             this.RvtSheetData.Views.Add(rvtView);
 
                             bool inserted = SheetDataWriter.ChangeViewItem(rvtView, CommandType.INSERT);
@@ -971,7 +1038,6 @@ namespace HOK.SheetManager.AddIn.Windows
                                 messages.Add(mInfo);
                             }
                         }
-                       
                     }
                     tg.Assimilate();
                 }
@@ -1072,7 +1138,7 @@ namespace HOK.SheetManager.AddIn.Windows
                         MessageBox.Show("Failed to rename views.\n" + ex.Message, "Rename Views", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
-                
+
                 if (messages.Count > 0)
                 {
                     MessageWindow mWindow = new MessageWindow();
@@ -1166,7 +1232,6 @@ namespace HOK.SheetManager.AddIn.Windows
                 //invoke itemssource converter to invoke datagrid sheet
                 //this.RvtSheetData.SelectedDisciplineIndex = -1;
                 //this.RvtSheetData.SelectedDisciplineIndex = disciplineIndex;
-
             }
             catch (Exception ex)
             {
@@ -1202,6 +1267,7 @@ namespace HOK.SheetManager.AddIn.Windows
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         private void NotifyPropertyChanged(String info)
         {
             if (PropertyChanged != null)

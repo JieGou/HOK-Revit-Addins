@@ -35,7 +35,11 @@ namespace HOK.RoomElevation
         public XYZ PickPoint
         { get { return pickPoint; } set { pickPoint = value; } }
 
-        public ElevationCreator(UIApplication uiapp, RoomElevationProperties rep, Wall wall, ElevationCreatorSettings settings, Dictionary<int, LinkedInstanceProperties> linkedInstances)
+        public ElevationCreator(UIApplication uiapp,
+                                RoomElevationProperties rep,
+                                Wall wall,
+                                ElevationCreatorSettings settings,
+                                Dictionary<int, LinkedInstanceProperties> linkedInstances)
         {
             //create by pick elements
             m_app = uiapp;
@@ -49,7 +53,10 @@ namespace HOK.RoomElevation
             m_viewFamilyTypeId = new ElementId(toolSettings.ViewFamilyId);
         }
 
-        public ElevationCreator(UIApplication uiapp, RoomElevationProperties rep, ElevationCreatorSettings settings, Dictionary<int, LinkedInstanceProperties> linkedInstances)
+        public ElevationCreator(UIApplication uiapp,
+                                RoomElevationProperties rep,
+                                ElevationCreatorSettings settings,
+                                Dictionary<int, LinkedInstanceProperties> linkedInstances)
         {
             //create by room list
             m_app = uiapp;
@@ -141,7 +148,10 @@ namespace HOK.RoomElevation
                     catch (Exception ex)
                     {
                         trans.RollBack();
-                        LogMessageBuilder.AddLogMessage(roomProperties.RoomNumber + " - " + roomProperties.RoomName + " : failed to create an elevation marker.");
+                        LogMessageBuilder.AddLogMessage(roomProperties.RoomNumber
+                            + " - "
+                            + roomProperties.RoomName
+                            + " : failed to create an elevation marker.");
                         LogMessageBuilder.AddLogMessage(ex.Message);
                         //MessageBox.Show("Failed to create an elevation marker.\n" + ex.Message, "Elevation Creator: Create Elevation Marker", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
@@ -205,7 +215,10 @@ namespace HOK.RoomElevation
                         catch (Exception ex)
                         {
                             trans.RollBack();
-                            LogMessageBuilder.AddLogMessage(roomProperties.RoomNumber + " - " + roomProperties.RoomName + " : failed to create elevation views.");
+                            LogMessageBuilder.AddLogMessage(roomProperties.RoomNumber
+                                + " - "
+                                + roomProperties.RoomName
+                                + " : failed to create elevation views.");
                             LogMessageBuilder.AddLogMessage(ex.Message);
                             //MessageBox.Show("Failed to create elevation views.\n" + ex.Message, "Elevation Creator: Create Elevation Views", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }

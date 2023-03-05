@@ -22,22 +22,29 @@ namespace HOK.RoomElevation
     /// <summary>
     /// Interaction logic for ElevationWindow.xaml
     /// </summary>
-    /// 
+    ///
     public partial class ElevationWindow : Window
     {
         private UIApplication m_app;
         private Document m_doc;
         private ViewPlan viewPlan = null;
         private List<ViewFamilyType> viewFamilyTypes = new List<ViewFamilyType>();
+
         //private ViewFamilyType viewElevationFamilyType = null;
         private ElevationCreatorSettings toolSettings = null;
+
         private Room sampleRoom = null;
         private Dictionary<int, RoomElevationProperties> roomDictionary = new Dictionary<int, RoomElevationProperties>();
         private Dictionary<int, LinkedInstanceProperties> linkedDocuments = new Dictionary<int, LinkedInstanceProperties>();
 
-        public ElevationCreatorSettings ToolSettings { get { return toolSettings; } set { toolSettings = value; } }
-        public Dictionary<int, RoomElevationProperties> RoomDictionary { get { return roomDictionary; } set { roomDictionary = value; } }
-        public Dictionary<int, LinkedInstanceProperties> LinkedDocuments { get { return linkedDocuments; } set { linkedDocuments = value; } }
+        public ElevationCreatorSettings ToolSettings
+        { get { return toolSettings; } set { toolSettings = value; } }
+
+        public Dictionary<int, RoomElevationProperties> RoomDictionary
+        { get { return roomDictionary; } set { roomDictionary = value; } }
+
+        public Dictionary<int, LinkedInstanceProperties> LinkedDocuments
+        { get { return linkedDocuments; } set { linkedDocuments = value; } }
 
         public ElevationWindow(UIApplication uiapp)
         {
@@ -92,7 +99,6 @@ namespace HOK.RoomElevation
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -113,26 +119,25 @@ namespace HOK.RoomElevation
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to display UI components\n"+ex.Message , "Display UI", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to display UI components\n" + ex.Message, "Display UI", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return result;
         }
-        
+
         private bool DisplayRooms()
         {
             bool result = false;
             try
             {
-                
                 Dictionary<int/*roomId*/, RoomElevationProperties> roomsStored = ElevationCreatorDataStorageUtil.GetRoomElevationProperties(m_doc, linkedDocuments);
                 roomDictionary = GetRoomsProperties(roomsStored);
 
-                treeViewRoom.ItemsSource = TreeviewModel.SetTreeView(roomDictionary, toolSettings.IsLinkedRoom );
+                treeViewRoom.ItemsSource = TreeviewModel.SetTreeView(roomDictionary, toolSettings.IsLinkedRoom);
                 result = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to display rooms.\n"+ex.Message, "Elevation Creator: DisplayRooms", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to display rooms.\n" + ex.Message, "Elevation Creator: DisplayRooms", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return result;
         }
@@ -208,7 +213,7 @@ namespace HOK.RoomElevation
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to display tools settings.\n"+ex.Message, "Elevation Creator: DisplaySettings", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to display tools settings.\n" + ex.Message, "Elevation Creator: DisplaySettings", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return result;
         }
@@ -232,7 +237,7 @@ namespace HOK.RoomElevation
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to collect view family types.\n"+ex.Message, "Collect View Family Types", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to collect view family types.\n" + ex.Message, "Collect View Family Types", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -262,7 +267,7 @@ namespace HOK.RoomElevation
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to collect view templates.\n"+ex.Message, "Elevation Creator: Collect View Templates", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to collect view templates.\n" + ex.Message, "Elevation Creator: Collect View Templates", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -297,7 +302,7 @@ namespace HOK.RoomElevation
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to collect room parameters.\n"+ex.Message, "Elevation Creator: CollectRoomParameters", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to collect room parameters.\n" + ex.Message, "Elevation Creator: CollectRoomParameters", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -368,7 +373,7 @@ namespace HOK.RoomElevation
                         }
                         else
                         {
-                            viewName +="A";
+                            viewName += "A";
                         }
                     }
 
@@ -376,18 +381,18 @@ namespace HOK.RoomElevation
                     {
                         if (!string.IsNullOrEmpty(viewName))
                         {
-                            viewName += " (" + suffix+")";
+                            viewName += " (" + suffix + ")";
                         }
                         else
                         {
-                            viewName += "("+suffix+")";
+                            viewName += "(" + suffix + ")";
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to get the example of the view name.\n"+ex.Message , "Elevation Creator: GetSampleViewName", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to get the example of the view name.\n" + ex.Message, "Elevation Creator: GetSampleViewName", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return viewName;
         }
@@ -429,7 +434,7 @@ namespace HOK.RoomElevation
                 textBoxPrefix.Text = toolSettings.PrefixText;
                 checkBoxIntermediate.IsChecked = toolSettings.IntermediateSelected;
 
-                for (int i = 0; i < comboBoxIntermediate.Items.Count;i++)
+                for (int i = 0; i < comboBoxIntermediate.Items.Count; i++)
                 {
                     string itemText = comboBoxIntermediate.Items[i].ToString();
                     if (itemText == toolSettings.IntermediateText)
@@ -450,12 +455,10 @@ namespace HOK.RoomElevation
                         comboBoxSuffix.SelectedIndex = i;
                     }
                 }
-
-
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to get Elevation Creator settings.\n"+ex.Message, "Elevation Creator: GetToolSettings", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to get Elevation Creator settings.\n" + ex.Message, "Elevation Creator: GetToolSettings", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -464,14 +467,14 @@ namespace HOK.RoomElevation
             bool result = false;
             try
             {
-                toolSettings.IsLinkedRoom = (bool) radioBttnRoomLink.IsChecked;
+                toolSettings.IsLinkedRoom = (bool)radioBttnRoomLink.IsChecked;
                 toolSettings.IsLInkedWall = (bool)radioBttnWallLink.IsChecked;
                 ViewFamilyType vft = (ViewFamilyType)comboBoxViewFamily.SelectedItem;
                 if (null != vft)
                 {
                     toolSettings.ViewFamilyId = vft.Id.IntegerValue;
                 }
-                ViewTemplateProperties vtp = (ViewTemplateProperties) comboBoxViewTemplate.SelectedItem;
+                ViewTemplateProperties vtp = (ViewTemplateProperties)comboBoxViewTemplate.SelectedItem;
                 if (null != vtp)
                 {
                     toolSettings.ViewTemplateId = vtp.TemplateId.IntegerValue;
@@ -479,7 +482,7 @@ namespace HOK.RoomElevation
 
                 toolSettings.ScaleByTemplate = (bool)radioBttnTemplate.IsChecked;
 
-                int scaleVal=0;
+                int scaleVal = 0;
                 if (!int.TryParse(textBoxScale.Text, out scaleVal))
                 {
                     MessageBox.Show("Please enter a valid number for the scale value.", "Elevation Creator : Invalid Scale Value", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -517,11 +520,10 @@ namespace HOK.RoomElevation
                 toolSettings.SuffixText = comboBoxSuffix.Text;
 
                 result = true;
-
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to save the settings.\n"+ex.Message, "Elevation Creator: SetToolSettings", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to save the settings.\n" + ex.Message, "Elevation Creator: SetToolSettings", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             return result;
         }
@@ -537,7 +539,7 @@ namespace HOK.RoomElevation
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to start creating elevation views by pick elements.\n"+ex.Message, "Elevation Creator: CreateByPickElements", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to start creating elevation views by pick elements.\n" + ex.Message, "Elevation Creator: CreateByPickElements", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -545,82 +547,82 @@ namespace HOK.RoomElevation
         {
             try
             {
-                if (SetToolSettings())
+                if (!SetToolSettings())
                 {
-                    List<RoomElevationProperties> selectedRooms = new List<RoomElevationProperties>();
+                    return;
+                }
 
-                    List<TreeviewModel> treeviewModels = treeViewRoom.ItemsSource as List<TreeviewModel>;
-                    foreach (TreeviewModel roomNode in treeviewModels)
+                List<RoomElevationProperties> selectedRooms = new List<RoomElevationProperties>();
+
+                List<TreeviewModel> treeviewModels = treeViewRoom.ItemsSource as List<TreeviewModel>;
+                foreach (TreeviewModel roomNode in treeviewModels)
+                {
+                    if (roomNode.IsChecked == true)
                     {
-                        if (roomNode.IsChecked == true)
+                        if (null != roomNode.RoomProperties)
                         {
-                            if (null != roomNode.RoomProperties)
-                            {
-                                RoomElevationProperties rep = roomNode.RoomProperties;
-                                selectedRooms.Add(rep);
-                                
-                            }
+                            RoomElevationProperties rep = roomNode.RoomProperties;
+                            selectedRooms.Add(rep);
                         }
                     }
+                }
 
-                    if (selectedRooms.Count > 0)
+                if (selectedRooms.Count > 0)
+                {
+                    progressBar.Visibility = System.Windows.Visibility.Visible;
+                    statusLable.Visibility = System.Windows.Visibility.Visible;
+                    statusLable.Text = "Creating Elevation Views . . .";
+
+                    progressBar.Minimum = 0;
+                    progressBar.Maximum = selectedRooms.Count;
+                    progressBar.Value = 0;
+
+                    double value = 0;
+                    UpdateProgressBarDelegate updatePdDelegate = new UpdateProgressBarDelegate(progressBar.SetValue);
+
+                    foreach (RoomElevationProperties rep in selectedRooms)
                     {
-                        progressBar.Visibility = System.Windows.Visibility.Visible;
-                        statusLable.Visibility = System.Windows.Visibility.Visible;
-                        statusLable.Text = "Creating Elevation Views . . .";
-
-                        progressBar.Minimum = 0;
-                        progressBar.Maximum = selectedRooms.Count;
-                        progressBar.Value = 0;
-
-                        double value = 0;
-                        UpdateProgressBarDelegate updatePdDelegate = new UpdateProgressBarDelegate(progressBar.SetValue);
-
-                        foreach (RoomElevationProperties rep in selectedRooms)
+                        ElevationCreator creator = new ElevationCreator(m_app, rep, toolSettings, linkedDocuments);
+                        if (creator.CheckExisting())
                         {
-                            ElevationCreator creator = new ElevationCreator(m_app, rep, toolSettings, linkedDocuments);
-                            if (creator.CheckExisting())
+                            if (creator.CreateElevationByList())
                             {
-                                if (creator.CreateElevationByList())
+                                RoomElevationProperties roomProperties = new RoomElevationProperties(creator.RoomProperties);
+                                if (roomDictionary.ContainsKey(roomProperties.RoomId))
                                 {
-                                    RoomElevationProperties roomProperties = new RoomElevationProperties(creator.RoomProperties);
-                                    if (roomDictionary.ContainsKey(roomProperties.RoomId))
-                                    {
-                                        roomDictionary.Remove(roomProperties.RoomId);
-                                    }
-                                    roomDictionary.Add(roomProperties.RoomId, roomProperties);
+                                    roomDictionary.Remove(roomProperties.RoomId);
                                 }
+                                roomDictionary.Add(roomProperties.RoomId, roomProperties);
                             }
-
-                            value += 1;
-                            Dispatcher.Invoke(updatePdDelegate, System.Windows.Threading.DispatcherPriority.Background, new object[] { ProgressBar.ValueProperty, value });
                         }
 
-                        statusLable.Text = "Ready";
-                        progressBar.Visibility = System.Windows.Visibility.Hidden;
-
-                        treeViewRoom.ItemsSource = null;
-                        treeViewRoom.ItemsSource = TreeviewModel.SetTreeView(roomDictionary, toolSettings.IsLinkedRoom);
-
-                        if (LogMessageBuilder.GetLogMessages().Length > 0)
-                        {
-                            LogMessageBox logMessageBox = new LogMessageBox();
-                            logMessageBox.Show();
-                        }
+                        value += 1;
+                        Dispatcher.Invoke(updatePdDelegate,
+                                          System.Windows.Threading.DispatcherPriority.Background,
+                                          new object[] { ProgressBar.ValueProperty, value });
                     }
 
+                    statusLable.Text = "Ready";
+                    progressBar.Visibility = System.Windows.Visibility.Hidden;
+
+                    treeViewRoom.ItemsSource = null;
+                    treeViewRoom.ItemsSource = TreeviewModel.SetTreeView(roomDictionary, toolSettings.IsLinkedRoom);
+
+                    if (LogMessageBuilder.GetLogMessages().Length > 0)
+                    {
+                        LogMessageBox logMessageBox = new LogMessageBox();
+                        logMessageBox.Show();
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to start creating elevation views by rooms lists.\n"+ex.Message , "Elevation Creator: CreateByRoomList", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to start creating elevation views by rooms lists.\n" + ex.Message, "Elevation Creator: CreateByRoomList", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
         private delegate void UpdateProgressBarDelegate(System.Windows.DependencyProperty dp, Object value);
 
-       
-        
         private void buttonCheck_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -649,7 +651,7 @@ namespace HOK.RoomElevation
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to uncheck all rooms in the list.\n"+ex.Message , "Elevation Creator: Uncheck All ", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to uncheck all rooms in the list.\n" + ex.Message, "Elevation Creator: Uncheck All ", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -808,11 +810,10 @@ namespace HOK.RoomElevation
                         //saved settings.
                     }
                 }
-                
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to save settings to extensible storage.\n"+ex.Message, "Elevatino Creator: Save Settings", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Failed to save settings to extensible storage.\n" + ex.Message, "Elevatino Creator: Save Settings", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -820,7 +821,6 @@ namespace HOK.RoomElevation
         {
             this.Close();
         }
-
     }
 
     public class ViewTemplateProperties
@@ -829,9 +829,14 @@ namespace HOK.RoomElevation
         private ElementId templateId = ElementId.InvalidElementId;
         private string templateName = "";
 
-        public ViewSection TemplateObj{get{return templateObj;}set{templateObj=value;}}
-        public ElementId TemplateId { get { return templateId; } set { templateId = value; } }
-        public string TemplateName { get { return templateName; } set { templateName = value; } }
+        public ViewSection TemplateObj
+        { get { return templateObj; } set { templateObj = value; } }
+
+        public ElementId TemplateId
+        { get { return templateId; } set { templateId = value; } }
+
+        public string TemplateName
+        { get { return templateName; } set { templateName = value; } }
 
         public ViewTemplateProperties()
         {
@@ -866,5 +871,4 @@ namespace HOK.RoomElevation
             return FailureProcessingResult.Continue;
         }
     }
-
 }

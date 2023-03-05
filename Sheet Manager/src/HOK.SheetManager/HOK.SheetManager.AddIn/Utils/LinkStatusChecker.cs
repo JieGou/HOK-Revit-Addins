@@ -21,7 +21,7 @@ namespace HOK.SheetManager.AddIn.Utils
                 {
                     InsertRevisionElements(doc, projectId, ref sheetData);
                 }
-               
+
                 CheckSheetLinks(doc, projectId, ref sheetData);
                 if (autoUpdate)
                 {
@@ -61,7 +61,6 @@ namespace HOK.SheetManager.AddIn.Utils
                             {
                                 sheetData.Revisions[i].LinkStatus.Modified = true;
                                 sheetData.Revisions[i].LinkStatus.ToolTip = "Revision parameter values are different from the linked element.";
-
                             }
                         }
                         else
@@ -74,7 +73,6 @@ namespace HOK.SheetManager.AddIn.Utils
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -92,7 +90,7 @@ namespace HOK.SheetManager.AddIn.Utils
                 {
                     revDictionary = linkedRevisions.ToDictionary(o => o.Id, o => o.LinkStatus.LinkedElementId);
                 }
-               
+
                 for (int i = 0; i < sheetData.Sheets.Count; i++)
                 {
                     RevitSheet rvtSheet = sheetData.Sheets[i];
@@ -104,13 +102,12 @@ namespace HOK.SheetManager.AddIn.Utils
                         ViewSheet viewSheet = doc.GetElement(linkedSheet.LinkedElementId) as ViewSheet;
                         if (null != viewSheet)
                         {
-
                             sheetData.Sheets[i].LinkStatus.IsLinked = true;
                             sheetData.Sheets[i].LinkStatus.CurrentLinkedId = linkedSheet.LinkedElementId;
                             sheetData.Sheets[i].LinkStatus.LinkedElementId = viewSheet.Id.IntegerValue;
                             sheetData.Sheets[i].LinkStatus.ToolTip = "Linked Sheet ElementId: " + viewSheet.Id.IntegerValue;
 
-                            //parameter check 
+                            //parameter check
                             string toolTip = "";
                             if (CompareSheetParameters(viewSheet, sheetData.Sheets[i], sheetData, out toolTip))
                             {
@@ -137,7 +134,6 @@ namespace HOK.SheetManager.AddIn.Utils
                                         }
                                     }
                                 }
-                                
                             }
                         }
                         else
@@ -163,7 +159,15 @@ namespace HOK.SheetManager.AddIn.Utils
             tooltip = "";
             try
             {
-                if (viewSheet.SheetNumber != rvtSheet.Number || viewSheet.ViewName != rvtSheet.Name)
+                if (viewSheet.SheetNumber != rvtSheet.Number
+#if DEBUG2018 || RELEASE2018
+                    || viewSheet.ViewName != rvtSheet.Name
+#else
+
+                    || viewSheet.Name != rvtSheet.Name
+
+#endif
+                    )
                 {
                     modified = true;
                     tooltip = "Sheet number or sheet name is different from the linked element.";
@@ -184,12 +188,15 @@ namespace HOK.SheetManager.AddIn.Utils
                                     case StorageType.Double:
                                         paramValueStr = param.AsDouble().ToString();
                                         break;
+
                                     case StorageType.ElementId:
                                         paramValueStr = param.AsElementId().IntegerValue.ToString();
                                         break;
+
                                     case StorageType.Integer:
                                         paramValueStr = param.AsInteger().ToString();
                                         break;
+
                                     case StorageType.String:
                                         paramValueStr = param.AsString();
                                         break;
@@ -209,7 +216,7 @@ namespace HOK.SheetManager.AddIn.Utils
             {
                 string message = ex.Message;
             }
-            return modified;     
+            return modified;
         }
 
         private static void CheckViewLinks(Document doc, Guid projectId, ref RevitSheetData sheetData)
@@ -226,8 +233,16 @@ namespace HOK.SheetManager.AddIn.Utils
                 {
                     RevitView rvtView = sheetData.Views[i];
                     ViewType rvtViewType = (ViewType)Enum.Parse(typeof(ViewType), rvtView.ViewType.ViewType.ToString());
-                  
-                    var viewFound = from view in viewsInRevit where view.ViewName == rvtView.Name && view.ViewType == rvtViewType select view;
+
+                    var viewFound =
+                        from view in viewsInRevit
+#if DEBUG2018 || RELEASE2018
+                        where view.ViewName == rvtView.Name
+#else
+                        where view.Name == rvtView.Name
+#endif
+                        && view.ViewType == rvtViewType
+                        select view;
                     if (viewFound.Count() > 0)
                     {
                         View existingView = viewFound.First();
@@ -261,8 +276,8 @@ namespace HOK.SheetManager.AddIn.Utils
             bool inserted = false;
             try
             {
-                var linkedRevisionIds = from revision in sheetData.Revisions 
-                                        where revision.LinkStatus.IsLinked && revision.LinkStatus.LinkedElementId != -1 
+                var linkedRevisionIds = from revision in sheetData.Revisions
+                                        where revision.LinkStatus.IsLinked && revision.LinkStatus.LinkedElementId != -1
                                         select revision.LinkStatus.LinkedElementId;
 
                 FilteredElementCollector collector = new FilteredElementCollector(doc);
@@ -388,7 +403,12 @@ namespace HOK.SheetManager.AddIn.Utils
                 }
                 else
                 {
-                    RevitSheet rvtSheet = new RevitSheet(Guid.NewGuid(), sheet.SheetNumber, sheet.ViewName);
+#if DEBUG2018 || RELEASE2018
+                    string sheetName = sheet.ViewName;
+#else
+                    string sheetName = sheet.Name;
+#endif
+                    RevitSheet rvtSheet = new RevitSheet(Guid.NewGuid(), sheet.SheetNumber, sheetName);
                     LinkedSheet linkedSheet = new LinkedSheet(Guid.NewGuid(), rvtSheet.Id, new LinkedProject(projectId), sheet.UniqueId, true);
                     rvtSheet.LinkedSheets.Add(linkedSheet);
                     bool sheetDBUpdated = SheetDataWriter.ChangeSheetItem(rvtSheet, CommandType.INSERT);
@@ -417,12 +437,15 @@ namespace HOK.SheetManager.AddIn.Utils
                                 case StorageType.Double:
                                     paramValue.ParameterValue = param.AsDouble().ToString();
                                     break;
+
                                 case StorageType.ElementId:
                                     paramValue.ParameterValue = param.AsElementId().IntegerValue.ToString();
                                     break;
+
                                 case StorageType.Integer:
                                     paramValue.ParameterValue = param.AsInteger().ToString();
                                     break;
+
                                 case StorageType.String:
                                     paramValue.ParameterValue = param.AsString();
                                     break;
@@ -452,6 +475,5 @@ namespace HOK.SheetManager.AddIn.Utils
             }
             return inserted;
         }
-
     }
 }
