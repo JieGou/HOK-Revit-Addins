@@ -408,6 +408,12 @@ namespace HOK.LevelManager
             return result;
         }
 
+        /// <summary>
+        /// 重新设置选择集为新的主体楼层
+        /// </summary>
+        /// <param name="elementSet"></param>
+        /// <param name="levelTo"></param>
+        /// <returns></returns>
         private bool RehostSelected(ElementSet elementSet, Level levelTo)
         {
             var result = false;
@@ -952,6 +958,7 @@ namespace HOK.LevelManager
                 {
                     foreach (var element in elementList)
                     {
+                        //组的跳过不处理
                         if (element.GroupId != ElementId.InvalidElementId) { continue; } //if parent group exists, this should be ignored
 
                         toolStripProgressBar.PerformStep();

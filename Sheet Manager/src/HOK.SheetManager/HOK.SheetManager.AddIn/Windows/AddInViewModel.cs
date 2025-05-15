@@ -984,6 +984,11 @@ namespace HOK.SheetManager.AddIn.Windows
             }
         }
 
+        /// <summary>
+        /// 图纸编号
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <returns></returns>
         public bool RenumberSheets(Document doc)
         {
             bool replaced = false;
